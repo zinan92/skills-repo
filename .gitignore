@@ -1,2 +1,6 @@
 .DS_Store
 manifest/install-manifest.json
+
+# Python
+__pycache__/
+*.pyc
