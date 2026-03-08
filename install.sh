@@ -1,19 +1,23 @@
 #!/usr/bin/env bash
 # install.sh — Park Skills Repo installer
-# Creates symlinks from each agent's workspace into this repo.
+#
+# Structure:
+#   global/openclaw/    → ~/.agents/skills/          (all OpenClaw agents)
+#   global/claude-code/ → ~/.claude/skills/           (all Claude Code instances)
+#   agents/<name>/      → <workspace>/.agents/skills/ (OpenClaw, agent-specific)
+#                       → <workspace>/.claude/skills/ (Claude Code in that workspace)
 #
 # Usage:
-#   ./install.sh [--dry-run] [--agent <name>] [--platform openclaw|claude-code|all]
-#
-# Supported agents: wendy, monica, donald, rachel, ross, chandler, gunther
+#   ./install.sh [--dry-run] [--agent <name>] [--section global|agents|all]
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 DRY_RUN=false
 TARGET_AGENT=""
-PLATFORM="all"
+SECTION="all"
 MANIFEST_FILE="${REPO_ROOT}/manifest/install-manifest.json"
 MANIFEST_ITEMS=""
+SYMLINK_COUNT=0
 
 # ── Colors ──────────────────────────────────────────────────
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; RED='\033[0;31m'; NC='\033[0m'
@@ -28,13 +32,13 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --dry-run)   DRY_RUN=true; shift ;;
     --agent)     TARGET_AGENT="$2"; shift 2 ;;
-    --platform)  PLATFORM="$2"; shift 2 ;;
-    -h|--help)   head -10 "$0" | tail -8; exit 0 ;;
+    --section)   SECTION="$2"; shift 2 ;;
+    -h|--help)   head -12 "$0" | tail -10; exit 0 ;;
     *)           err "Unknown option: $1"; exit 1 ;;
   esac
 done
 
-# ── Agent → Workspace (bash 3.2 compatible) ──────────────────
+# ── Agent → Workspace ────────────────────────────────────────
 get_workspace() {
   case "$1" in
     wendy)    echo "$HOME/clawd" ;;
@@ -50,16 +54,15 @@ get_workspace() {
 
 ALL_AGENTS="wendy monica donald rachel ross chandler gunther"
 
-SYMLINK_COUNT=0
-
+# ── Symlink helper ───────────────────────────────────────────
 make_symlink() {
   local src="$1" dst="$2"
   if $DRY_RUN; then
-    dry "[$(basename "$(dirname "$dst")")]  $(basename "$dst")  →  $src"
+    dry "$(basename "$dst")  →  $src"
     return
   fi
   if [ -L "$dst" ]; then
-    rm "$dst"   # replace stale symlink
+    rm "$dst"
   elif [ -e "$dst" ]; then
     warn "Skipping (real path exists): $dst"
     return
@@ -68,68 +71,69 @@ make_symlink() {
   ok "$(basename "$dst")"
 
   local entry="{\"type\":\"symlink\",\"src\":\"${src}\",\"dst\":\"${dst}\"}"
-  if [ -z "$MANIFEST_ITEMS" ]; then
-    MANIFEST_ITEMS="$entry"
-  else
-    MANIFEST_ITEMS="${MANIFEST_ITEMS},${entry}"
-  fi
+  MANIFEST_ITEMS="${MANIFEST_ITEMS:+${MANIFEST_ITEMS},}${entry}"
   SYMLINK_COUNT=$((SYMLINK_COUNT + 1))
 }
 
+# ── Install skills from a src dir into a target dir ─────────
+install_skills_dir() {
+  local src_dir="$1" target_dir="$2"
+  [ -d "$src_dir" ] || return
+  $DRY_RUN || mkdir -p "$target_dir"
+  for skill_path in "${src_dir}"/*/; do
+    [ -d "$skill_path" ] || continue
+    local skill_name
+    skill_name="$(basename "$skill_path")"
+    make_symlink "${skill_path%/}" "${target_dir}/${skill_name}"
+  done
+}
+
+# ── Section: global ──────────────────────────────────────────
+install_global() {
+  info "── global/openclaw → ~/.agents/skills/"
+  install_skills_dir "${REPO_ROOT}/global/openclaw" "$HOME/.agents/skills"
+
+  info "── global/claude-code → ~/.claude/skills/"
+  install_skills_dir "${REPO_ROOT}/global/claude-code" "$HOME/.claude/skills"
+}
+
+# ── Section: agents ──────────────────────────────────────────
 install_agent() {
   local agent="$1"
   local workspace
   workspace="$(get_workspace "$agent")"
 
-  if [ -z "$workspace" ]; then
-    warn "Unknown agent: $agent"
-    return
-  fi
+  [ -n "$workspace" ]   || { warn "Unknown agent: $agent"; return; }
+  [ -d "$workspace" ]   || { warn "Workspace not found: $workspace"; return; }
 
   local skills_src="${REPO_ROOT}/agents/${agent}"
-  if [ ! -d "$skills_src" ]; then
-    warn "No skills folder for $agent — skipping"
+  [ -d "$skills_src" ] && [ "$(ls -A "$skills_src" 2>/dev/null)" ] || {
+    info "── $agent (no agent-specific skills)"
     return
-  fi
-  if [ ! -d "$workspace" ]; then
-    warn "Workspace not found for $agent ($workspace) — skipping"
-    return
-  fi
+  }
 
-  info "── $agent ──────────────────────"
+  info "── $agent"
 
-  # OpenClaw: <workspace>/.agents/skills/<skill>
-  if [[ "$PLATFORM" == "openclaw" || "$PLATFORM" == "all" ]]; then
-    local oc_dir="${workspace}/.agents/skills"
-    $DRY_RUN || mkdir -p "$oc_dir"
-    for skill_path in "${skills_src}"/*/; do
-      [ -d "$skill_path" ] || continue
-      local skill_name
-      skill_name="$(basename "$skill_path")"
-      make_symlink "${skill_path%/}" "${oc_dir}/${skill_name}"
-    done
-  fi
+  # OpenClaw: <workspace>/.agents/skills/
+  install_skills_dir "$skills_src" "${workspace}/.agents/skills"
 
-  # Claude Code: <workspace>/.claude/skills/<skill>
-  if [[ "$PLATFORM" == "claude-code" || "$PLATFORM" == "all" ]]; then
-    local cc_dir="${workspace}/.claude/skills"
-    $DRY_RUN || mkdir -p "$cc_dir"
-    for skill_path in "${skills_src}"/*/; do
-      [ -d "$skill_path" ] || continue
-      local skill_name
-      skill_name="$(basename "$skill_path")"
-      make_symlink "${skill_path%/}" "${cc_dir}/${skill_name}"
-    done
-  fi
+  # Claude Code: <workspace>/.claude/skills/
+  install_skills_dir "$skills_src" "${workspace}/.claude/skills"
 }
 
 # ── Run ──────────────────────────────────────────────────────
-if [ -n "$TARGET_AGENT" ]; then
-  install_agent "$TARGET_AGENT"
-else
-  for agent in $ALL_AGENTS; do
-    install_agent "$agent"
-  done
+if [[ "$SECTION" == "global" || "$SECTION" == "all" ]]; then
+  install_global
+fi
+
+if [[ "$SECTION" == "agents" || "$SECTION" == "all" ]]; then
+  if [ -n "$TARGET_AGENT" ]; then
+    install_agent "$TARGET_AGENT"
+  else
+    for agent in $ALL_AGENTS; do
+      install_agent "$agent"
+    done
+  fi
 fi
 
 # ── Write manifest ───────────────────────────────────────────
@@ -139,7 +143,7 @@ if ! $DRY_RUN && [ -n "$MANIFEST_ITEMS" ]; then
 {
   "version": "1.0.0",
   "installed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "platform": "${PLATFORM}",
+  "section": "${SECTION}",
   "repo": "${REPO_ROOT}",
   "items": [${MANIFEST_ITEMS}]
 }
