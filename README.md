@@ -153,115 +153,101 @@ scope: global            # global | agent:<name> | company:<company>
 
 ## Skill 列表
 
-### 开发工作流（Dev Workflow）
+为了更容易发现和解释这套仓库里的技能，我把目录按 `global / data / content / dev / trading` 五大类来展示。
+
+注意：
+
+- 这里的五大类是**发现层分类**，方便你理解“这套 skills 是给谁、解决什么问题”
+- **真正的安装路由仍然以每个 `SKILL.md` 的 `platform` / `scope` frontmatter 为准**
+- `global` 这里特指“推荐所有 agent 默认配的基础技能包”，不是“所有 `scope: global` skill 的完整镜像”
+
+### 1. Global（默认配，控制在 10 个以内）
+
+| Skill | 平台 | 说明 |
+|-------|------|------|
+| `using-superpowers` | claude-code | 会话开始时发现和调用合适 skill |
+| `triage` | claude-code | 判断任务类型与执行方式 |
+| `writing-plans` | claude-code | 从需求整理到实现计划 |
+| `executing-plans` | claude-code | 带 review checkpoint 的计划执行 |
+| `test-driven-development` | claude-code | 先写测试再实现 |
+| `requesting-code-review` | claude-code | 完成后请求 code review |
+| `receiving-code-review` | claude-code | 收到 review 后做技术验证 |
+| `verification-before-completion` | claude-code | 完成前先跑验证，证据先于断言 |
+| `using-git-worktrees` | claude-code | 创建隔离 worktree，避免污染当前工作区 |
+
+### 2. Data
 
 | Skill | 平台 | 作用域 | 说明 |
 |-------|------|--------|------|
-| `triage` | claude-code | global | 任务分类 — 决定如何执行 |
-| `writing-plans` | claude-code | global | 从需求到实现计划 |
-| `executing-plans` | claude-code | global | 带 review checkpoint 的计划执行 |
-| `mvu-execution` | claude-code | global | 100-300 行的原子执行单元，含 reviewer 和升级路径 |
-| `test-driven-development` | claude-code | global | TDD：先写测试再实现 |
-| `requesting-code-review` | claude-code | global | 完成任务后请求 code review |
-| `receiving-code-review` | claude-code | global | 收到 review 反馈后的技术验证流程 |
-| `verification-before-completion` | claude-code | global | 完成前运行验证命令，证据先于断言 |
-| `finishing-a-development-branch` | claude-code | global | 开发分支完成后的集成决策 |
-| `using-git-worktrees` | claude-code | global | 创建隔离的 git worktree |
-| `dispatching-parallel-agents` | claude-code | global | 并行分发独立任务 |
-| `subagent-driven-development` | claude-code | global | 用 sub-agent 执行实现计划 |
-| `systematic-debugging` | openclaw | global | 系统化调试流程 |
-| `github` | both | agent:monica | GitHub 操作：issues, PRs, CI |
+| `hackernews` | both | agent:monica | Hacker News 抓取与检索 |
+| `reddit` | both | agent:monica | Reddit 内容检索 |
+| `blogwatcher` | both | agent:monica | RSS / Atom 博客监控 |
+| `summarize` | both | agent:monica | URL / 播客 / 本地文件摘要 |
+| `obsidian` | both | agent:monica | Obsidian vault 操作 |
+| `bird` | both | agent:wendy | X / Twitter CLI 与信息抓取 |
+| `d3-viz` | openclaw | global | 数据可视化 |
+| `connect-the-dots` | both | agent:wendy | 把笔记与知识点串成可用结构 |
+| `ontology` | both | agent:wendy | 类型化知识图谱建模 |
 
-### AI Agent 管理
+### 3. Content
 
 | Skill | 平台 | 作用域 | 说明 |
 |-------|------|--------|------|
-| `agent-onboarding` | both | agent:wendy | 新 agent 初始化和环境配置 |
-| `agent-estimation` | both | agent:wendy | 用 tool-call rounds 估算 agent 工作量 |
-| `using-superpowers` | claude-code | global | 会话开始时发现和使用 skills |
-| `find-skills` | openclaw | global | 帮助用户发现可安装的 skills |
-| `writing-skills` | claude-code | global | 创建和编辑 skills |
-| `delegation` | both | agent:wendy | 任务委派 |
-| `proactive-agent` | both | agent:wendy | 从任务执行者到主动合作伙伴 |
-| `continuous-learning-v2` | both | agent:wendy | 基于 instinct 的学习系统 |
-| `learning` | both | agent:wendy | 每周学习路线推荐 |
-
-### 思维与认知
-
-| Skill | 平台 | 作用域 | 说明 |
-|-------|------|--------|------|
-| `brainstorming` | openclaw | global | 创意工作前的意图探索 |
-| `intent-clarifier` | both | agent:wendy | 模糊想法的交互式澄清 |
-| `cognitive-distillation` | both | agent:wendy | 四层认知蒸馏：Raw → Episodic → Semantic → Principles |
-| `connect-the-dots` | both | agent:wendy | Obsidian 知识库的知识编排 |
-| `ontology` | both | agent:wendy | 类型化知识图谱 |
-
-### 内容创作（Baoyu 系列）
-
-| Skill | 平台 | 作用域 | 说明 |
-|-------|------|--------|------|
-| `baoyu-image-gen` | both | company:content-co | AI 图片生成（OpenAI, Google, DashScope, Replicate） |
-| `baoyu-cover-image` | both | company:content-co | 文章封面图生成（5维度 × 9色板 × 6渲染风格） |
-| `baoyu-article-illustrator` | both | company:content-co | 文章配图（Type × Style 二维方法） |
-| `baoyu-infographic` | both | company:content-co | 信息图生成（21布局 × 20视觉风格） |
-| `baoyu-xhs-images` | both | company:content-co | 小红书图片系列（10风格 × 8布局） |
+| `baoyu-image-gen` | both | company:content-co | AI 图片生成 |
+| `baoyu-cover-image` | both | company:content-co | 文章封面图生成 |
+| `baoyu-article-illustrator` | both | company:content-co | 文章配图 |
+| `baoyu-infographic` | both | company:content-co | 信息图生成 |
+| `baoyu-xhs-images` | both | company:content-co | 小红书图片系列 |
 | `baoyu-comic` | both | company:content-co | 知识漫画创作 |
 | `baoyu-slide-deck` | both | company:content-co | 幻灯片生成 |
-| `baoyu-format-markdown` | both | company:content-co | Markdown 格式化美化 |
-| `baoyu-markdown-to-html` | both | company:content-co | Markdown 转 HTML（支持微信主题） |
-| `baoyu-url-to-markdown` | both | company:content-co | 网页转 Markdown（Chrome CDP） |
-| `baoyu-compress-image` | both | company:content-co | 图片压缩（WebP/PNG） |
+| `baoyu-format-markdown` | both | company:content-co | Markdown 格式美化 |
+| `baoyu-markdown-to-html` | both | company:content-co | Markdown 转 HTML |
+| `baoyu-url-to-markdown` | both | company:content-co | 网页转 Markdown |
+| `baoyu-compress-image` | both | company:content-co | 图片压缩 |
 | `baoyu-post-to-wechat` | both | company:content-co | 发布到微信公众号 |
-| `baoyu-post-to-x` | both | company:content-co | 发布到 X/Twitter |
-| `baoyu-danger-x-to-markdown` | both | company:content-co | X/Twitter 内容转 Markdown |
-| `baoyu-danger-gemini-web` | both | company:content-co | Gemini Web API 图片/文本生成 |
-
-### UI/UX 与前端
-
-| Skill | 平台 | 作用域 | 说明 |
-|-------|------|--------|------|
-| `ui-ux-pro-max` | openclaw | global | UI/UX 设计（50风格, 21色板, 50字体组合, 8技术栈） |
-| `d3-viz` | openclaw | global | D3.js 数据可视化 |
-| `tailwindcss-advanced-layouts` | openclaw | global | Tailwind CSS 高级布局 |
-| `nextjs-app-router-patterns` | openclaw | global | Next.js 14+ App Router |
+| `baoyu-post-to-x` | both | company:content-co | 发布到 X / Twitter |
+| `baoyu-danger-x-to-markdown` | both | company:content-co | X / Twitter 内容转 Markdown |
+| `baoyu-danger-gemini-web` | both | company:content-co | Gemini Web 图片 / 文本生成 |
 | `remotion-best-practices` | both | agent:donald | Remotion 视频逻辑 |
 
-### 后端与 API
+### 4. Dev
 
 | Skill | 平台 | 作用域 | 说明 |
 |-------|------|--------|------|
-| `fastapi-python` | openclaw | global | FastAPI Python 开发 |
+| `dispatching-parallel-agents` | claude-code | global | 并行分发独立任务 |
+| `subagent-driven-development` | claude-code | global | 用 sub-agent 执行实现计划 |
+| `mvu-execution` | claude-code | global | 100-300 行原子执行单元 |
+| `systematic-debugging` | openclaw | global | 系统化调试流程 |
+| `finishing-a-development-branch` | claude-code | global | 完成开发分支后的集成决策 |
+| `writing-skills` | claude-code | global | 创建和编辑 skills |
+| `find-skills` | openclaw | global | 帮助发现可安装的 skills |
+| `product-readme` | both | global | 产品级 README 撰写 |
+| `fastapi-python` | openclaw | global | FastAPI 开发 |
 | `fastapi-async-patterns` | openclaw | global | FastAPI 异步模式 |
+| `tailwindcss-advanced-layouts` | openclaw | global | Tailwind CSS 高级布局 |
+| `nextjs-app-router-patterns` | openclaw | global | Next.js App Router 模式 |
+| `ui-ux-pro-max` | openclaw | global | UI / UX 设计 |
+| `agent-onboarding` | both | agent:wendy | 新 agent 初始化与环境配置 |
+| `agent-estimation` | both | agent:wendy | 用 tool-call rounds 估算工作量 |
+| `delegation` | both | agent:wendy | 任务委派 |
+| `proactive-agent` | both | agent:wendy | 从任务执行者进化为主动合作伙伴 |
+| `proactive-explorer` | both | global | 面向公开仓库的下一步产品方向探索 |
+| `continuous-learning-v2` | both | agent:wendy | 基于 instinct 的学习系统 |
+| `learning` | both | agent:wendy | 每周学习路线推荐 |
+| `brainstorming` | openclaw | global | 创意工作前的意图探索 |
+| `intent-clarifier` | both | agent:wendy | 模糊想法的交互式澄清 |
+| `cognitive-distillation` | both | agent:wendy | 四层认知蒸馏 |
+| `github` | both | agent:monica | GitHub 操作：issues / PRs / CI |
+| `mgrep` | both | agent:wendy | 语义搜索工具 |
+| `linear` | both | agent:wendy | Linear 集成 |
 
-### 数据与信息源
-
-| Skill | 平台 | 作用域 | 说明 |
-|-------|------|--------|------|
-| `hackernews` | both | agent:monica | Hacker News API |
-| `reddit` | both | agent:monica | Reddit 内容检索 |
-| `blogwatcher` | both | agent:monica | RSS/Atom 博客监控 |
-| `summarize` | both | agent:monica | URL/播客/本地文件摘要 |
-| `bird` | both | agent:wendy | X/Twitter CLI |
-| `obsidian` | both | agent:monica | Obsidian vault 操作 |
-
-### 交易与风控
+### 5. Trading
 
 | Skill | 平台 | 作用域 | 说明 |
 |-------|------|--------|------|
 | `risk-management` | openclaw | global | 仓位管理和止损规则 |
 
-### 文档与产品化
-
-| Skill | 平台 | 作用域 | 说明 |
-|-------|------|--------|------|
-| `product-readme` | both | global | 产品级 README 撰写（人类 + agent 双读者） |
-
-### 工具
-
-| Skill | 平台 | 作用域 | 说明 |
-|-------|------|--------|------|
-| `mgrep` | both | agent:wendy | 搜索工具 |
-| `linear` | both | agent:wendy | Linear 集成 |
+当前 `trading` 还是一个很薄的分类，后面会继续扩。
 
 ## 添加新 Skill
 
@@ -330,4 +316,4 @@ scope: global              # 作用域
 
 ## License
 
-Private repository.
+This repository is public, but no open-source license is declared yet.

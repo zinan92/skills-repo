@@ -1,6 +1,8 @@
 ---
 name: proactive-explorer
 description: Use when a repository is already public or close to public and the user wants to know what to build next to increase GitHub stars, adoption, or product attractiveness after reaching v1, especially when they ask what is missing, what to improve, or how to go from 1 to 10 honestly.
+platform: both
+scope: global
 ---
 
 # Proactive Explorer
