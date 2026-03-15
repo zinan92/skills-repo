@@ -1,0 +1,23 @@
+{
+  "skill_name": "agent-onboarding",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a brand-new Data Co agent named Justin with workspace `/Users/wendy/work/data-co/JUSTIN-quant-workspace`. Put the canonical profile files, SOP placeholder, and runtime spec under Wendy, and make the workspace contain only runtime-state plus symlinks. Do not fabricate memory files.",
+      "expected_output": "Creates or describes a new-agent initialization flow where canonical files live under Wendy, the target workspace keeps only runtime-state plus symlinks, and no fake memory history is created.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Onboard a new Content Co distribution agent. Define the required onboarding spec first, then scaffold canonical files under Wendy, then scaffold runtime-state in the target workspace, then validate everything. Keep Reports To singular and make Scope Boundary explicit.",
+      "expected_output": "Requests or freezes the onboarding fields, scaffolds Wendy-owned canonical files plus workspace runtime-state, and emphasizes singular reporting lines plus explicit boundaries.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Re-onboard an old legacy agent by migrating its existing notes and memory into a new workspace.",
+      "expected_output": "Refuses to treat legacy migration as onboarding and states that this skill is for new agent initialization only.",
+      "files": []
+    }
+  ]
+}
