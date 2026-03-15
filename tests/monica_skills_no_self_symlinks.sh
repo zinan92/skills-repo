@@ -1,20 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-MONICA_DIR="/Users/wendy/work/agents-co/wendy/skills-repo/agents/monica"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-found=0
-for path in "$MONICA_DIR"/*; do
-  [ -L "$path" ] || continue
-  target="$(readlink "$path")"
-  if [ "$target" = "$path" ]; then
-    echo "self-referential symlink: $path" >&2
-    found=1
+assert_contains() {
+  local haystack="$1"
+  local needle="$2"
+  if [[ "$haystack" != *"$needle"* ]]; then
+    echo "missing expected output: $needle" >&2
+    exit 1
   fi
-done
+}
 
-if [ "$found" -ne 0 ]; then
-  exit 1
-fi
+assert_not_contains() {
+  local haystack="$1"
+  local needle="$2"
+  if [[ "$haystack" == *"$needle"* ]]; then
+    echo "unexpected output: $needle" >&2
+    exit 1
+  fi
+}
 
-echo "monica agent skills have no self symlinks"
+output="$(bash "$REPO_ROOT/install.sh" --dry-run --agent monica)"
+
+assert_contains "$output" "$REPO_ROOT/skills/data/hackernews"
+assert_contains "$output" "$REPO_ROOT/skills/dev/github"
+assert_not_contains "$output" "$REPO_ROOT/agents/monica"
+assert_not_contains "$output" "$REPO_ROOT/companies/content-co"
+
+echo "monica dry-run uses nested category sources only"

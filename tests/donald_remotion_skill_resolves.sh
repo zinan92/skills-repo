@@ -1,24 +1,32 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CANONICAL="/Users/wendy/work/agents-co/wendy/skills-repo/agents/donald/remotion-best-practices"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+DONALD_WORKSPACE="/Users/wendy/work/content-co/ceo-donald"
 
-if [ -L "$CANONICAL" ]; then
-  target="$(readlink "$CANONICAL")"
-  if [ "$target" = "$CANONICAL" ]; then
-    echo "donald remotion skill is self-referential: $CANONICAL" >&2
+assert_contains() {
+  local haystack="$1"
+  local needle="$2"
+  if [[ "$haystack" != *"$needle"* ]]; then
+    echo "missing expected output: $needle" >&2
     exit 1
   fi
-fi
+}
 
-for path in \
-  /Users/wendy/work/content-co/ceo-donald/.agents/skills/remotion-best-practices \
-  /Users/wendy/work/content-co/ceo-donald/.claude/skills/remotion-best-practices \
-; do
-  if [ ! -e "$path" ]; then
-    echo "donald remotion workspace link is broken: $path" >&2
+assert_not_contains() {
+  local haystack="$1"
+  local needle="$2"
+  if [[ "$haystack" == *"$needle"* ]]; then
+    echo "unexpected output: $needle" >&2
     exit 1
   fi
-done
+}
 
-echo "donald remotion skill resolves"
+output="$(bash "$REPO_ROOT/install.sh" --dry-run --agent donald)"
+
+assert_contains "$output" "$REPO_ROOT/skills/content/remotion-best-practices"
+assert_contains "$output" "$DONALD_WORKSPACE/.claude/skills/remotion-best-practices"
+assert_contains "$output" "$DONALD_WORKSPACE/.agents/skills/remotion-best-practices"
+assert_not_contains "$output" "$REPO_ROOT/agents/donald"
+
+echo "donald remotion dry-run routes resolve"

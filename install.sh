@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# install.sh — Park Skills Repo installer (flat structure)
+# install.sh — Park Skills Repo installer
 #
 # Structure:
-#   skills/<skill-name>/SKILL.md  — each skill has platform + scope frontmatter
+#   skills/<category>/<skill-name>/SKILL.md  — each skill has platform + scope frontmatter
 #
 # Routing is driven by SKILL.md frontmatter:
 #   platform: claude-code | openclaw | both
@@ -166,15 +166,9 @@ route_skill() {
 info "Scanning skills/ for SKILL.md frontmatter..."
 echo ""
 
-for skill_dir in "${REPO_ROOT}"/skills/*/; do
-  [ -d "$skill_dir" ] || continue
+while IFS= read -r skill_md; do
+  skill_dir="$(dirname "$skill_md")"
   skill_name="$(basename "$skill_dir")"
-  skill_md="${skill_dir}SKILL.md"
-
-  if [ ! -f "$skill_md" ]; then
-    warn "No SKILL.md in ${skill_name}, skipping"
-    continue
-  fi
 
   platform="$(read_frontmatter "$skill_md" "platform")"
   scope="$(read_frontmatter "$skill_md" "scope")"
@@ -185,8 +179,8 @@ for skill_dir in "${REPO_ROOT}"/skills/*/; do
   fi
 
   info "── ${skill_name} (${platform}, ${scope})"
-  route_skill "${skill_dir%/}" "$platform" "$scope"
-done
+  route_skill "$skill_dir" "$platform" "$scope"
+done < <(find "${REPO_ROOT}/skills" -type f -name SKILL.md | sort)
 
 # ── Write manifest ───────────────────────────────────────────
 if ! $DRY_RUN && [ -n "$MANIFEST_ITEMS" ]; then

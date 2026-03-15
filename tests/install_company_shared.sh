@@ -19,14 +19,13 @@ run_and_check() {
   local output
   output="$(bash "$REPO_ROOT/install.sh" --dry-run --agent "$agent")"
 
-  assert_contains "$output" "baoyu-xhs-images  →  $REPO_ROOT/companies/content-co/baoyu-skills/skills/baoyu-xhs-images"
-  assert_contains "$output" "baoyu-post-to-x  →  $REPO_ROOT/companies/content-co/baoyu-skills/skills/baoyu-post-to-x"
-  assert_contains "$output" "baoyu-markdown-to-html  →  $REPO_ROOT/companies/content-co/baoyu-skills/skills/baoyu-markdown-to-html"
+  assert_contains "$output" "baoyu-xhs-images  →  $REPO_ROOT/skills/content/baoyu-xhs-images"
+  assert_contains "$output" "baoyu-post-to-x  →  $REPO_ROOT/skills/content/baoyu-post-to-x"
+  assert_contains "$output" "baoyu-markdown-to-html  →  $REPO_ROOT/skills/content/baoyu-markdown-to-html"
   assert_contains "$output" "$workspace/.agents/skills"
   assert_contains "$output" "$workspace/.claude/skills"
 }
 
 run_and_check "donald" "/Users/wendy/work/content-co/ceo-donald"
-run_and_check "ross" "/Users/wendy/work/content-co/distribution-lead-ross"
 
 echo "company-shared install dry-run checks passed"

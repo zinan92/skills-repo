@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-found=0
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+MONICA_WORKSPACE="/Users/wendy/work/agents-co/monica"
 
-for dir in \
-  /Users/wendy/work/agents-co/monica/.agents/skills \
-  /Users/wendy/work/agents-co/monica/.claude/skills \
-; do
-  for path in "$dir"/*; do
-    [ -L "$path" ] || continue
-    if [ ! -e "$path" ]; then
-      echo "broken workspace skill symlink: $path" >&2
-      found=1
-    fi
-  done
-done
+assert_contains() {
+  local haystack="$1"
+  local needle="$2"
+  if [[ "$haystack" != *"$needle"* ]]; then
+    echo "missing expected output: $needle" >&2
+    exit 1
+  fi
+}
 
-if [ "$found" -ne 0 ]; then
-  exit 1
-fi
+output="$(bash "$REPO_ROOT/install.sh" --dry-run --agent monica)"
 
-echo "monica workspace skill symlinks resolve"
+assert_contains "$output" "$REPO_ROOT/skills/data/blogwatcher"
+assert_contains "$output" "$REPO_ROOT/skills/data/reddit"
+assert_contains "$output" "$REPO_ROOT/skills/dev/github"
+assert_contains "$output" "$MONICA_WORKSPACE/.claude/skills"
+assert_contains "$output" "$MONICA_WORKSPACE/.agents/skills"
+
+echo "monica workspace dry-run routes resolve"
