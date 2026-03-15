@@ -72,6 +72,64 @@ git commit -m "docs: productize README for human + agent readers"
 git push
 ```
 
+### Step 5: Update GitHub Profile (Conditional)
+
+After pushing the repo README, check whether this project should appear on the GitHub profile.
+
+**Gate conditions — ALL must be true:**
+
+1. Repo is **public**: `gh api repos/OWNER/REPO --jq '.private'` returns `false`
+2. Project is **substantial** enough to showcase (not a config repo, dotfiles, or trivial fork)
+
+If either fails, skip this step silently.
+
+**If conditions pass, ask the user:**
+
+> "要更新 GitHub profile 吗？放在哪个分类下？（data / content / agent / 新分类）"
+
+Wait for the user's answer. Do NOT auto-pick a category.
+
+**Profile structure reference:**
+
+The profile lives at `github.com/zinan92/zinan92` (`README.md`). The "what I'm building" section uses `### <category>` headers with entries in this format:
+
+```markdown
+### <category>
+
+EMOJI **[repo-name](https://github.com/zinan92/repo-name)** — one-line description
+```
+
+**Execution:**
+
+```bash
+# 1. Clone profile repo (shallow, to /tmp)
+gh repo clone zinan92/zinan92 /tmp/zinan92-profile -- --depth 1
+
+# 2. Edit /tmp/zinan92-profile/README.md:
+#    - Find the ### <category> section the user chose
+#    - If entry already exists for this repo → update the description
+#    - If entry doesn't exist → append under that category header
+#    - If category doesn't exist → create new ### <category> section before the --- separator
+
+# 3. Commit and push
+cd /tmp/zinan92-profile
+git add README.md
+git commit -m "docs: add/update <repo-name> in profile"
+git push
+
+# 4. Clean up
+rm -rf /tmp/zinan92-profile
+```
+
+**Entry format rules:**
+
+| Field | Rule |
+|-------|------|
+| Emoji | Pick one that matches the project domain (📊 data, 🧠 AI, ✂️ video, 📥 download, 🤖 agent, 🔧 tool, etc.) |
+| Repo name | Exact GitHub repo name, linked |
+| Description | One line, English or mixed — match existing profile tone (witty, concise) |
+| Dedup | If the repo already appears in ANY category, update in place instead of duplicating |
+
 ---
 
 ## README Template
