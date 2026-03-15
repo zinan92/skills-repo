@@ -31,7 +31,7 @@ fi
 assert_contains "$output" "$REPO_ROOT/skills/dev/using-superpowers"
 assert_contains "$output" "$REPO_ROOT/skills/dev/skill-creator"
 assert_contains "$output" "$REPO_ROOT/skills/content/baoyu-post-to-x"
-assert_contains "$output" "$REPO_ROOT/skills/dev/product-readme"
+assert_contains "$output" "$REPO_ROOT/skills/dev/gh-readme"
 assert_contains "$output" "$REPO_ROOT/skills/data/hackernews"
 assert_contains "$output" "$REPO_ROOT/skills/trading/risk-management"
 assert_not_contains "$output" "$REPO_ROOT/skills/global/"

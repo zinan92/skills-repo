@@ -4,7 +4,7 @@
 
 **Goal:** Reorganize `skills-repo` so the five top-level domains each live in their own subfolder, while keeping installation and documentation working.
 
-**Architecture:** Move each skill directory from the flat `skills/<name>/` layout to `skills/<category>/<name>/`. Update `install.sh` to scan recursively for `SKILL.md` and install the containing skill directory. Add a regression test that proves dry-run output resolves nested category paths, then rewrite `README.md` with the product-readme structure to document the new layout.
+**Architecture:** Move each skill directory from the flat `skills/<name>/` layout to `skills/<category>/<name>/`. Update `install.sh` to scan recursively for `SKILL.md` and install the containing skill directory. Add a regression test that proves dry-run output resolves nested category paths, then rewrite `README.md` with the gh-readme structure to document the new layout.
 
 **Tech Stack:** Bash, Markdown, repo-local shell tests
 
@@ -30,7 +30,7 @@ and asserts the output contains nested source paths such as:
 ```text
 $REPO_ROOT/skills/global/using-superpowers
 $REPO_ROOT/skills/content/baoyu-post-to-x
-$REPO_ROOT/skills/dev/product-readme
+$REPO_ROOT/skills/dev/gh-readme
 ```
 
 **Step 2: Run test to verify it fails**
@@ -90,7 +90,7 @@ Expected: PASS
 Run: `bash tests/install_company_shared.sh`
 Expected: PASS
 
-### Task 4: Rewrite README with product-readme structure
+### Task 4: Rewrite README with gh-readme structure
 
 **Files:**
 - Modify: `README.md`

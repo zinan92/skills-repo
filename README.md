@@ -38,7 +38,7 @@ skills-repo/
 │   │   ├── baoyu-post-to-x/
 │   │   └── ...
 │   ├── dev/
-│   │   ├── product-readme/
+│   │   ├── gh-readme/
 │   │   ├── skill-creator/
 │   │   ├── using-superpowers/
 │   │   ├── writing-skills/
@@ -158,7 +158,7 @@ skills-repo/
 
 ```yaml
 ---
-name: product-readme
+name: gh-readme
 description: Use when user asks to productize a README for a repo
 platform: both
 scope: global

@@ -1,5 +1,5 @@
 ---
-name: product-readme
+name: gh-readme
 description: Writes comprehensive READMEs serving both human readers and AI agent readers. Use when user says "用 GitHub Skill", "productize README", or asks to create a product-grade README for a repo.
 platform: both
 scope: global
