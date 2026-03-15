@@ -2,9 +2,9 @@
 
 # skills-repo
 
-**把 AI agent skills 统一收纳到一个仓库里，按 `global / data / content / dev / trading` 分类组织，并用 frontmatter + symlink 安装到正确的 agent workspace。**
+**把 AI agent skills 统一收纳到一个仓库里，按 `data / content / dev / trading` 四类组织，并用 frontmatter + symlink 安装到正确的 agent workspace。**
 
-[![Skills](https://img.shields.io/badge/skills-61-blue.svg)](https://github.com/zinan92/skills-repo)
+[![Skills](https://img.shields.io/badge/skills-62-blue.svg)](https://github.com/zinan92/skills-repo)
 [![Platforms](https://img.shields.io/badge/platform-claude--code%20%7C%20openclaw-green.svg)](https://github.com/zinan92/skills-repo)
 [![Installer](https://img.shields.io/badge/installer-bash-yellow.svg)](https://github.com/zinan92/skills-repo)
 
@@ -20,7 +20,7 @@
 
 ## 解决方案
 
-`skills-repo` 把所有 skills 放进一个公共仓库，用五大类子目录组织发现层结构，再用每个 `SKILL.md` 里的 `platform` 和 `scope` frontmatter 驱动安装。目录负责“好找”，frontmatter 负责“装对”。
+`skills-repo` 把所有 skills 放进一个公共仓库，用四个业务分类子目录组织发现层结构，再用每个 `SKILL.md` 里的 `platform` 和 `scope` frontmatter 驱动安装。目录负责“好找”，frontmatter 负责“装对”。
 
 安装器 `install.sh` 会递归扫描 `skills/` 下的 `SKILL.md`，把对应 skill 目录 symlink 到 `~/.claude/skills`、`~/.agents/skills` 或特定 agent workspace。这样既保留了分类目录，也保留了单个 skill 目录的独立性。
 
@@ -29,10 +29,6 @@
 ```text
 skills-repo/
 ├── skills/
-│   ├── global/
-│   │   ├── using-superpowers/
-│   │   ├── triage/
-│   │   └── ...
 │   ├── data/
 │   │   ├── hackernews/
 │   │   ├── summarize/
@@ -43,6 +39,8 @@ skills-repo/
 │   │   └── ...
 │   ├── dev/
 │   │   ├── product-readme/
+│   │   ├── skill-creator/
+│   │   ├── using-superpowers/
 │   │   ├── writing-skills/
 │   │   └── ...
 │   └── trading/
@@ -93,8 +91,8 @@ bash uninstall.sh
 
 | 功能 | 说明 | 状态 |
 |------|------|------|
-| Central skill registry | 统一管理 61 个 skills，避免多份副本漂移 | 已完成 |
-| Five-category discovery layer | 通过 `global / data / content / dev / trading` 提升可发现性 | 已完成 |
+| Central skill registry | 统一管理 62 个 skills，避免多份副本漂移 | 已完成 |
+| Four-category discovery layer | 通过 `data / content / dev / trading` 提升可发现性 | 已完成 |
 | Recursive installer | 自动发现 `skills/<category>/<skill>/SKILL.md` 并安装对应 skill 根目录 | 已完成 |
 | Frontmatter routing | 基于 `platform` / `scope` 路由到 home 或 agent workspace | 已完成 |
 | Agent filter | 支持 `--agent <name>` 只安装目标 agent 相关 skills | 已完成 |
@@ -125,10 +123,9 @@ bash uninstall.sh
 ```text
 skills-repo/
 ├── skills/
-│   ├── global/      # 默认给所有 agent 配置的基础技能包（9 个）
 │   ├── data/        # 数据获取、摘要、知识组织（9 个）
 │   ├── content/     # 内容生产与发布（16 个）
-│   ├── dev/         # 开发工作流、agent 管理、工程工具（26 个）
+│   ├── dev/         # 开发工作流、原 global 基础包、agent 管理、工程工具（36 个）
 │   └── trading/     # 交易与风控（1 个）
 ├── tests/           # dry-run 与路由回归测试
 ├── manifest/        # 安装清单
@@ -150,10 +147,9 @@ skills-repo/
 
 | 分类 | 说明 | 当前数量 |
 |------|------|----------|
-| `global` | 推荐所有 agent 默认安装的基础技能包 | 9 |
 | `data` | 数据源、摘要、知识组织与可视化 | 9 |
 | `content` | 内容生成、排版、图片、分发 | 16 |
-| `dev` | 开发工作流、agent 管理、工程与产品化技能 | 26 |
+| `dev` | 开发工作流、原 `global` 基础技能包、agent 管理、工程与产品化技能 | 36 |
 | `trading` | 交易与风险控制 | 1 |
 
 ## 路由规则
@@ -195,7 +191,6 @@ entrypoints:
 skill_layout:
   pattern: skills/<category>/<skill>/SKILL.md
   categories:
-    - global
     - data
     - content
     - dev
@@ -213,7 +208,7 @@ routing:
 
 ### Agent 使用建议
 
-1. 先浏览 `skills/` 的五大类，确定应在哪个业务域下找 skill。
+1. 先浏览 `skills/` 的四大类，确定应在哪个业务域下找 skill。
 2. 再读取目标 skill 的 `SKILL.md`，以 frontmatter 为准理解安装路由。
 3. 需要批量安装时优先使用 `bash install.sh --dry-run` 预览结果。
 4. 需要撤销安装时使用 `bash uninstall.sh`，不要手工删除一批未知 symlink。
@@ -233,7 +228,7 @@ bash install.sh --dry-run
 
 新 skill 至少需要：
 
-- 放在五大类中的某一个子目录下
+- 放在四大类中的某一个子目录下
 - 在 `SKILL.md` 中声明 `platform` 与 `scope`
 - 保持一个 skill 一个独立目录，便于附带 `references/`、`scripts/`、`assets/`
 
